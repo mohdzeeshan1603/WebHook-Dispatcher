@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Webhook Dispatcher</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 0 16px;
+      background: #f7f9fc;
+      color: #1f2937;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 16px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+    input, textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-family: inherit;
+    }
+    textarea {
+      min-height: 110px;
+      font-family: monospace;
+    }
+    button {
+      margin-top: 16px;
+      padding: 10px 18px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Webhook Dispatcher</h1>
+  <p>Service is running in-memory. Use the form below to send a test dispatch request to <code>/api/webhooks/dispatch</code>.</p>
+
+  <div class="card">
+    <form id="webhookForm">
+      <label for="eventId">Event ID</label>
+      <input id="eventId" type="text" value="evt-101" required />
+
+      <label for="destinationUrl">Destination URL</label>
+      <input id="destinationUrl" type="url" placeholder="https://webhook.site/your-id" required />
+
+      <label for="payload">Payload (JSON)</label>
+      <textarea id="payload">{"message": "Hello from Railway"}</textarea>
+
+      <button type="submit">Dispatch Webhook</button>
+    </form>
+
+    <h3>Response</h3>
+    <pre id="result">Waiting for request...</pre>
+  </div>
+
+  <script>
+    const form = document.getElementById("webhookForm");
+    const resultEl = document.getElementById("result");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      resultEl.textContent = "Sending...";
+
+      let parsedPayload;
+      try {
+        parsedPayload = JSON.parse(document.getElementById("payload").value);
+      } catch (err) {
+        resultEl.textContent = "Invalid JSON in payload: " + err.message;
+        return;
+      }
+
+      const body = {
+        eventId: document.getElementById("eventId").value,
+        destinationUrl: document.getElementById("destinationUrl").value,
+        payload: parsedPayload
+      };
+
+      try {
+        const res = await fetch("/api/webhooks/dispatch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        const text = await res.text();
+        resultEl.textContent = `Status: ${res.status}\n\n${text}`;
+      } catch (err) {
+        resultEl.textContent = "Request failed: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
