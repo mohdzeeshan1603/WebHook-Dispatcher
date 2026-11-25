@@ -25,13 +25,11 @@ public class WebhookAPI {
     public WebhookAPI(WebhookService webhookService) {
         this.webhookService = webhookService;
     }
-
     @PostMapping("/dispatch")
     public ResponseEntity<DispatchResponse> dispatch(@Valid @RequestBody DispatchRequest request) {
         DispatchResponse response = webhookService.enqueueWebhook(request);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
-
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
