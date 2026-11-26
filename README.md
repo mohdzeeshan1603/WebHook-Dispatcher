@@ -51,8 +51,7 @@ A reliable, non-blocking **Distributed Webhook Dispatcher Engine** built with **
 ```text
 src/main/java/com/webhook/Webhook/
 ├── api/
-│   ├── WebhookAPI.java                   # POST /api/webhooks/dispatch & error handling
-│   └── HomePageController.java             # Root endpoint (/)
+│   ├── WebhookAPI.java                   # POST /api/webhooks/dispatch & error handling             
 ├── dto/
 │   ├── DispatchRequest.java              # Incoming webhook request DTO
 │   └── DispatchResponse.java             # 202 Accepted response DTO
@@ -61,8 +60,8 @@ src/main/java/com/webhook/Webhook/
 │   ├── DeliveryAttempt.java              # Individual delivery attempt audit log
 │   └── Status.java                       # Job & attempt lifecycle statuses
 ├── repository/
-│   ├── InMemoryWebHookStore.java         # ConcurrentHashMap store for webhook jobs
-│   └── InMemoryDeliveryAttemptStore.java # ConcurrentHashMap store for delivery attempts
+│   ├── WebHookRepo.java                  # ConcurrentHashMap store for webhook jobs
+│   └── DeliveryAttempRepo.java.          # ConcurrentHashMap store for delivery attempts
 └── service/
     └── WebhookService.java               # Queueing, background worker, backoff & rate limiter
 ```
